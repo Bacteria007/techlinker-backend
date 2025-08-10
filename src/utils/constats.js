@@ -5,12 +5,12 @@ exports.requiredProps = {
   VERIFY_EMAIL_OTP: ["email", "otp"],
   UPDATE_MY_PROFILE_PICTURE: ["image"],
   FORGET_PASSWORD: ["email"],
-  VERIFY_FORGET_PASSWORD_OTP: ["email" , "otp"],
-  RESET_PASSWORD: ["email" , "password" , "otp"],
+  VERIFY_FORGET_PASSWORD_OTP: ["email", "otp"],
+  RESET_PASSWORD: ["email", "password", "otp"],
 };
 
 exports.userType = {
-  ADMIN: '1',
-  STUDENT: '2',
-  INSTITUE: '3'
+  ADMIN: "1",
+  STUDENT: "2",
+  INSTITUE: "3",
 };
