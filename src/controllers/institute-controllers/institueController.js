@@ -5,7 +5,7 @@ const Institute = require("../../models/institutes");
 exports.signup = async (req, res) => {
   try {
     const { name, email, password, phone, website, about, address } = req.body;
-    console.log(name);
+    console.log(name, email, password, phone, website, about, address );
     // Check if email already exists
     const existingInstitute = await Institute.findOne({ email });
     if (existingInstitute) {
@@ -15,6 +15,14 @@ exports.signup = async (req, res) => {
       });
     }
 
+    if (!req.file) {
+      return res.status(400).json({ 
+        message: "Image is required",
+        success: false,
+        data: null
+      });
+    }
+    
      if (!email || !password) {
       return res.status(400).json({ 
         message: "Email and password are required",
@@ -42,6 +50,7 @@ exports.signup = async (req, res) => {
     
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
+    const filePath = `/uploads/assets/profiles/institute/${req.file.filename}`;
 
     const newInstitute = new Institute({
       name,
@@ -51,6 +60,7 @@ exports.signup = async (req, res) => {
       phone,
       about,
       address,
+      image: filePath,
     });
     await newInstitute.save();
     const instituteData = newInstitute.toObject();

@@ -1,21 +1,26 @@
 // models/Admin.js
 
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
+const { userType } = require("../utils/constats");
 
 const adminSchema = new mongoose.Schema({
-  fullName: {
+  name: {
     type: String,
-    required: true
+    required: true,
   },
   email: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
   },
   password: {
     type: String,
-    required: true
-  }
+    required: true,
+  },
+  role: {
+    type: String,
+    default: userType.ADMIN,
+  },
 });
 
-module.exports = mongoose.model('admins', adminSchema);
+module.exports = mongoose.model("admins", adminSchema);

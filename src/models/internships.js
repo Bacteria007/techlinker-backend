@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { userType } = require("../utils/constats");
 
 const internshipSchema = new mongoose.Schema(
   {
@@ -21,6 +22,10 @@ const internshipSchema = new mongoose.Schema(
     description: { type: String },
     location: { type: String, required: true },
     deadline: { type: Date, required: true },
+    role: {
+      type: String,
+      default: userType.INSTITUE,
+    },
   },
   { timestamps: true }
 );

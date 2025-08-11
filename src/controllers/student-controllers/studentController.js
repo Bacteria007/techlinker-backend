@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
-const Student=require("../../models/students")
+const Student=require("../../models/students");
+const { userType } = require("../../utils/constats");
 const EMAIL_ID = "aqsa.dev1@gmail.com";
 const EMAIL_PASSWORD = "zlor syag wydu szoh";
 
@@ -17,7 +18,15 @@ const transporter = nodemailer.createTransport({
 
 exports.signup = async (req, res) => {
   try {
-    const { email, password, fullName } = req.body;
+    const { email, password, name } = req.body;
+
+     if (!req.file) {
+      return res.status(400).json({ 
+        message: "Avatar is required",
+        success: false,
+        data: null
+      });
+    }
 
     if (!email || !password) {
       return res.status(400).json({ 
@@ -54,11 +63,13 @@ exports.signup = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    const filePath = `/uploads/assets/profile/student/${req.file.filename}`;
 
     const student = new Student({
       email,
       password: hashedPassword,
-      fullName: fullName || "",
+      name: name || "",
+      avatar:filePath
     });
 
     await student.save();
@@ -69,7 +80,8 @@ exports.signup = async (req, res) => {
       data: {
         id: student._id,
         email: student.email,
-        fullName: student.fullName,
+        name: student.name,
+        role: student.role
       }
     });
   } catch (error) {
@@ -81,6 +93,7 @@ exports.signup = async (req, res) => {
     });
   }
 };
+
 
 exports.login = async (req, res) => {
   try {
@@ -118,7 +131,8 @@ exports.login = async (req, res) => {
       data: {
         id: student._id,
         email: student.email,
-        fullName: student.fullName,
+        name: student.name,
+        role:student.role
       }
     });
   } catch (error) {
@@ -285,7 +299,7 @@ exports.getStudentProfile = async (req, res) => {
       data: {
         id: student._id,
         email: student.email,
-        fullName: student.fullName,
+        name: student.name,
         phoneNumber: student.phoneNumber,
         bio: student.bio,
         resume: student.resume || "",
@@ -304,7 +318,7 @@ exports.getStudentProfile = async (req, res) => {
 exports.updateStudentProfile = async (req, res) => {
   try {
     const { id } = req.params;
-    const { fullName, email, phoneNumber, bio } = req.body;
+    const { name, email, phoneNumber, bio } = req.body;
 
     if (!id) {
       return res.status(400).json({ 
@@ -324,7 +338,7 @@ exports.updateStudentProfile = async (req, res) => {
     }
 
     // Update text fields
-    if (fullName !== undefined) student.fullName = fullName;
+    if (name !== undefined) student.name = name;
     if (email !== undefined) student.email = email;
     if (phoneNumber !== undefined) student.phoneNumber = phoneNumber;
     if (bio !== undefined) student.bio = bio;
@@ -352,7 +366,7 @@ exports.updateStudentProfile = async (req, res) => {
       data: {
         id: student._id,
         email: student.email,
-        fullName: student.fullName,
+        name: student.name,
         phoneNumber: student.phoneNumber,
         bio: student.bio,
         resume: student.resume || "",

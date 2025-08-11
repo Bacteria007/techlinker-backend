@@ -1,51 +1,68 @@
 const multer = require("multer");
 const path = require("path");
+const fs = require("fs");
 
-// Resume PDF middleware
-const resumePdfMW = multer({
-  storage: multer.diskStorage({
-    destination: function (req, file, cb) {
-      cb(null, "./uploads/assets/resumes");
-    },
-    filename: function (req, file, cb) {
-      const now = Date.now();
-      cb(null, `${file.fieldname}-${now}${path.extname(file.originalname)}`);
-    },
-  }),
-  fileFilter: function (req, file, cb) {
-    if (file.mimetype === "application/pdf") {
-      cb(null, true);
-    } else {
-      cb(new Error("Only PDF files are allowed!"), false);
-    }
-  },
-}).single("resume");
+// 📌 Function to create a dynamic upload middleware
+function createUploadMiddleware(folderName, allowedMimeTypes, fieldName) {
+  // Ensure upload folder exists
+  const uploadPath = `./uploads/assets/${folderName}`;
+  if (!fs.existsSync(uploadPath)) {
+    fs.mkdirSync(uploadPath, { recursive: true });
+  }
 
-// Internship Image middleware
-const internshipImageMW = multer({
-  storage: multer.diskStorage({
-    destination: function (req, file, cb) {
-      cb(null, "./uploads/assets/internship");
+  return multer({
+    storage: multer.diskStorage({
+      destination: function (req, file, cb) {
+        cb(null, uploadPath);
+      },
+      filename: function (req, file, cb) {
+        const now = Date.now();
+        cb(null, `${file.fieldname}-${now}${path.extname(file.originalname)}`);
+      },
+    }),
+    fileFilter: function (req, file, cb) {
+      if (allowedMimeTypes.includes(file.mimetype)) {
+        cb(null, true);
+      } else {
+        cb(
+          new Error(
+            `Only files of type: ${allowedMimeTypes.join(", ")} are allowed!`
+          ),
+          false
+        );
+      }
     },
-    filename: function (req, file, cb) {
-      const now = Date.now();
-      cb(null, `${file.fieldname}-${now}${path.extname(file.originalname)}`);
-    },
-  }),
-  fileFilter: function (req, file, cb) {
-    if (
-      file.mimetype === "image/jpeg" ||
-      file.mimetype === "image/png" ||
-      file.mimetype === "image/jpg"
-    ) {
-      cb(null, true);
-    } else {
-      cb(new Error("Only image files (JPG, JPEG, PNG) are allowed!"), false);
-    }
-  },
-}).single("image");
+  }).single(fieldName);
+}
+
+// 📌 Middlewares
+const resumePdfMW = createUploadMiddleware(
+  "resumes",
+  ["application/pdf"],
+  "resume"
+);
+
+const internshipImageMW = createUploadMiddleware(
+  "internship",
+  ["image/jpeg", "image/png", "image/jpg", "image/webp"],
+  "image"
+);
+
+const studentAvatarMW = createUploadMiddleware(
+  "profiles/student",
+  ["image/jpeg", "image/png", "image/jpg", "image/webp"],
+  "avatar"
+);
+const institueImageMW = createUploadMiddleware(
+  "profiles/institute",
+  ["image/jpeg", "image/png", "image/jpg", "image/webp"],
+  "image"
+);
 
 module.exports = {
   resumePdfMW,
-  internshipImageMW
+  internshipImageMW,
+  createUploadMiddleware,
+  institueImageMW,
+  studentAvatarMW,
 };

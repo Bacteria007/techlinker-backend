@@ -7,8 +7,10 @@ const {
   getProfile,
   updateProfile,
 } = require("../controllers/institute-controllers/institueController");
+const { institueImageMW } = require("../middlewares/profile");
 
-router.post("/signup", signup);
+
+router.post("/signup",institueImageMW, signup);
 router.post("/login", login);
 router.get("/:id", getProfile);
 router.put("/update-profile/:id", updateProfile);
