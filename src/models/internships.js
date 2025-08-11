@@ -14,7 +14,6 @@ const internshipSchema = new mongoose.Schema(
     stipend: { type: String },
     type: {
       type: String,
-      enum: ["Full-time", "Part-time", "Hybrid"],
       required: true,
     },
     datePosted: { type: Date, default: Date.now },

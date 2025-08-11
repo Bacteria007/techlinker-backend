@@ -48,21 +48,21 @@ const internshipImageMW = createUploadMiddleware(
   "image"
 );
 
-const studentAvatarMW = createUploadMiddleware(
-  "profiles/student",
-  ["image/jpeg", "image/png", "image/jpg", "image/webp"],
-  "avatar"
-);
-const institueImageMW = createUploadMiddleware(
-  "profiles/institute",
-  ["image/jpeg", "image/png", "image/jpg", "image/webp"],
-  "image"
-);
+// const studentAvatarMW = createUploadMiddleware(
+//   "profiles/student",
+//   ["image/jpeg", "image/png", "image/jpg", "image/webp"],
+//   "avatar"
+// );
+// const institueImageMW = createUploadMiddleware(
+//   "profiles/institute",
+//   ["image/jpeg", "image/png", "image/jpg", "image/webp"],
+//   "image"
+// );
 
 module.exports = {
   resumePdfMW,
   internshipImageMW,
   createUploadMiddleware,
-  institueImageMW,
-  studentAvatarMW,
+  // institueImageMW,
+  // studentAvatarMW,
 };
