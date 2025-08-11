@@ -8,14 +8,31 @@ const {
   getActiveMonthInternships,
   getInternships,
   searchInternship,
+  getInternshipsByInstitute,getSingleInternship,
+  applyInternship,
+  getInternshipApplicants,
+  getStudentAppliedInternships
 } = require("../controllers/internship-controllers/internshipController");
-const { internshipImageMW } = require("../middlewares/profile");
+const { internshipImageMW, resumePdfMW } = require("../middlewares/profile");
 
 // 📬 POST
 router.post("/add", internshipImageMW, addInternship);
 
 // ✅ GET All internships
 router.get("/", getInternships);
+router.get("/details/:id", getSingleInternship);
+
+// ✅ GET All internships of a specific institue
+router.get(
+  "/institute/:instituteId",
+  getInternshipsByInstitute
+);
+
+
+router.get("/search", searchInternship);
+router.post("/apply", resumePdfMW, applyInternship);
+router.get("/institute/:internshipId/applicants", getInternshipApplicants);
+router.get("/student/:studentId/applied-internships", getStudentAppliedInternships);
 
 // 🗑 DELETE
 router.delete("/:id", deleteInternship);
@@ -29,6 +46,5 @@ router.get("/check", checkInternships);
 // 📅 Active this month
 router.get("/active-month", getActiveMonthInternships);
 
-router.get("/search", searchInternship);
 
 module.exports = router;

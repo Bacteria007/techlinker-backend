@@ -13,18 +13,19 @@ const app = express();
 const PORT = 3000;
 
 // app.use(bodyParser.json());
+// dotenv.config();
 app.use(logger);
 app.use(errorHandler);
-// dotenv.config();
 connectDB();
 app.use(express.json());
+app.use("/uploads", express.static("uploads"));
+
 
 app.use("/api/student", studentRoutes);
 app.use("/api/institute", instituteRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/internship", internshipRoutes);
 app.use("/api/messages", messageRoutes);
-app.use("/uploads", express.static("uploads"));
 
 app.get("/health", (req, res) => {
   res.send("API is running...");

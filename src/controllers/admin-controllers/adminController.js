@@ -1,47 +1,47 @@
-const bcrypt = require("bcryptjs");
-const Admin = require("../../models/admins"); // Ensure correct path
+const Admin = require("../../models/admins");
 
-// Admin Signup
-exports.signup = async (req, res) => {
-  try {
-    const { name, email, password, phone, gender } = req.body;
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const newAdmin = new Admin({
-      name,
-      email,
-      password: hashedPassword,
-      phone,
-      gender,
-    });
-
-    await newAdmin.save();
-    res.status(201).json({ message: "Admin registered successfully" });
-  } catch (error) {
-    console.error("Signup Error:", error);
-    res.status(500).json({ message: "Error registering admin", error });
-  }
-};
-
-// Admin Login
+// Admin Login (no signup for admin)
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    // Find admin by email
     const admin = await Admin.findOne({ email });
     if (!admin) {
-      return res.status(401).json({ message: "Invalid email or password" });
+      return res.status(401).json({
+        message: "Invalid email or password",
+        success: false,
+        data: null,
+      });
     }
 
-    const isPasswordValid = await bcrypt.compare(password, admin.password);
-    if (!isPasswordValid) {
-      return res.status(401).json({ message: "Invalid email or password" });
+    // Plain text password check
+    if (password !== admin.password) {
+      return res.status(401).json({
+        message: "Invalid email or password",
+        success: false,
+        data: null,
+      });
     }
 
-    res.status(200).json({ message: "Login successful" });
+    // Login successful
+    res.status(200).json({
+      message: "Login successful",
+      success: true,
+      data: {
+        id: admin._id,
+        name: admin.name,
+        email: admin.email,
+        phone: admin.phone,
+        gender: admin.gender,
+      },
+    });
   } catch (error) {
-    console.error("Login Error:", error);
-    res.status(500).json({ message: "Error logging in", error });
+    console.error("Admin Login Error:", error);
+    res.status(500).json({
+      message: "Server error during login",
+      success: false,
+      data: null,
+    });
   }
 };

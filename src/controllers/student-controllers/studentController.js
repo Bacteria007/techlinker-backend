@@ -1,7 +1,6 @@
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
-const Student = require("../../models/students");
-
+const Student=require("../../models/students")
 const EMAIL_ID = "aqsa.dev1@gmail.com";
 const EMAIL_PASSWORD = "zlor syag wydu szoh";
 
@@ -15,30 +14,43 @@ const transporter = nodemailer.createTransport({
 });
 
 // ============== Auth ==============
+
 exports.signup = async (req, res) => {
   try {
     const { email, password, fullName } = req.body;
 
     if (!email || !password) {
-      return res
-        .status(400)
-        .json({ message: "Email and password are required." });
+      return res.status(400).json({ 
+        message: "Email and password are required",
+        success: false,
+        data: null
+      });
     }
 
     const emailRegex = /\S+@\S+\.\S+/;
     if (!emailRegex.test(email)) {
-      return res.status(400).json({ message: "Invalid email format." });
+      return res.status(400).json({ 
+        message: "Invalid email format",
+        success: false,
+        data: null
+      });
     }
 
     if (password.length < 8) {
-      return res
-        .status(400)
-        .json({ message: "Password must be at least 8 characters." });
+      return res.status(400).json({ 
+        message: "Password must be at least 8 characters",
+        success: false,
+        data: null
+      });
     }
 
     const existingStudent = await Student.findOne({ email });
     if (existingStudent) {
-      return res.status(409).json({ message: "Email already exists." });
+      return res.status(409).json({ 
+        message: "Email already exists",
+        success: false,
+        data: null
+      });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -53,15 +65,20 @@ exports.signup = async (req, res) => {
 
     res.status(201).json({
       message: "Student registered successfully",
-      student: {
+      success: true,
+      data: {
         id: student._id,
         email: student.email,
         fullName: student.fullName,
-      },
+      }
     });
   } catch (error) {
     console.error("Signup Error:", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ 
+      message: "Internal server error",
+      success: false,
+      data: null
+    });
   }
 };
 
@@ -70,32 +87,47 @@ exports.login = async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res
-        .status(400)
-        .json({ message: "Email and password are required." });
+      return res.status(400).json({ 
+        message: "Email and password are required",
+        success: false,
+        data: null
+      });
     }
 
     const student = await Student.findOne({ email });
     if (!student) {
-      return res.status(401).json({ message: "Invalid email or password." });
+      return res.status(401).json({ 
+        message: "Invalid email or password",
+        success: false,
+        data: null
+      });
     }
 
     const isValidPassword = await bcrypt.compare(password, student.password);
     if (!isValidPassword) {
-      return res.status(401).json({ message: "Wrong password." });
+      return res.status(401).json({ 
+        message: "Wrong password",
+        success: false,
+        data: null
+      });
     }
 
     res.status(200).json({
       message: "Student logged in successfully",
-      student: {
+      success: true,
+      data: {
         id: student._id,
         email: student.email,
         fullName: student.fullName,
-      },
+      }
     });
   } catch (error) {
     console.error("Login Error:", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ 
+      message: "Internal server error",
+      success: false,
+      data: null
+    });
   }
 };
 
@@ -104,14 +136,20 @@ exports.resetPassword = async (req, res) => {
     const { email } = req.body;
 
     if (!email) {
-      return res.status(400).json({ message: "Email is required." });
+      return res.status(400).json({ 
+        message: "Email is required",
+        success: false,
+        data: null
+      });
     }
 
     const student = await Student.findOne({ email });
     if (!student) {
-      return res
-        .status(401)
-        .json({ message: "No Account exists with this email." });
+      return res.status(401).json({ 
+        message: "No Account exists with this email",
+        success: false,
+        data: null
+      });
     }
 
     // Generate a 6-digit OTP
@@ -138,10 +176,18 @@ exports.resetPassword = async (req, res) => {
 
     await transporter.sendMail(mailOptions);
 
-    res.status(200).json({ message: "OTP sent to your email" });
+    res.status(200).json({ 
+      message: "OTP sent to your email",
+      success: true,
+      data: null
+    });
   } catch (error) {
     console.error("Reset Password Error:", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ 
+      message: "Internal server error",
+      success: false,
+      data: null
+    });
   }
 };
 
@@ -150,23 +196,29 @@ exports.verifyOtpAndResetPassword = async (req, res) => {
     const { email, otp, newPassword } = req.body;
 
     if (!email || !otp || !newPassword) {
-      return res
-        .status(400)
-        .json({ message: "Email, OTP, and new password are required." });
+      return res.status(400).json({ 
+        message: "Email, OTP, and new password are required",
+        success: false,
+        data: null
+      });
     }
 
     if (newPassword.length < 8) {
-      return res
-        .status(400)
-        .json({ message: "New password must be at least 8 characters." });
+      return res.status(400).json({ 
+        message: "New password must be at least 8 characters",
+        success: false,
+        data: null
+      });
     }
 
     const studentExists = await Student.findOne({ email });
 
     if (!studentExists) {
-      return res
-        .status(401)
-        .json({ message: "No Student found with this email." });
+      return res.status(401).json({ 
+        message: "No Student found with this email",
+        success: false,
+        data: null
+      });
     }
 
     const student = await Student.findOne({
@@ -176,7 +228,11 @@ exports.verifyOtpAndResetPassword = async (req, res) => {
     });
 
     if (!student) {
-      return res.status(401).json({ message: "Invalid or expired OTP." });
+      return res.status(401).json({ 
+        message: "Invalid or expired OTP",
+        success: false,
+        data: null
+      });
     }
 
     // Hash the new password and update student
@@ -185,10 +241,18 @@ exports.verifyOtpAndResetPassword = async (req, res) => {
     student.resetPasswordExpires = undefined;
     await student.save();
 
-    res.status(200).json({ message: "Password reset successfully" });
+    res.status(200).json({ 
+      message: "Password reset successfully",
+      success: true,
+      data: null
+    });
   } catch (error) {
     console.error("Verify OTP and Reset Password Error:", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ 
+      message: "Internal server error",
+      success: false,
+      data: null
+    });
   }
 };
 
@@ -199,28 +263,41 @@ exports.getStudentProfile = async (req, res) => {
     const { id } = req.params;
 
     if (!id) {
-      return res.status(400).json({ message: "Student ID Missing" });
+      return res.status(400).json({ 
+        message: "Student ID Missing",
+        success: false,
+        data: null
+      });
     }
 
     const student = await Student.findById(id);
     if (!student) {
-      return res.status(404).json({ message: "Student not found." });
+      return res.status(404).json({ 
+        message: "Student not found",
+        success: false,
+        data: null
+      });
     }
 
     res.status(200).json({
       message: "Student profile retrieved successfully",
-      student: {
+      success: true,
+      data: {
         id: student._id,
         email: student.email,
         fullName: student.fullName,
         phoneNumber: student.phoneNumber,
         bio: student.bio,
         resume: student.resume || "",
-      },
+      }
     });
   } catch (error) {
     console.error("Get Profile Error:", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ 
+      message: "Internal server error",
+      success: false,
+      data: null
+    });
   }
 };
 
@@ -230,12 +307,20 @@ exports.updateStudentProfile = async (req, res) => {
     const { fullName, email, phoneNumber, bio } = req.body;
 
     if (!id) {
-      return res.status(400).json({ message: "Student ID Missing" });
+      return res.status(400).json({ 
+        message: "Student ID Missing",
+        success: false,
+        data: null
+      });
     }
 
     const student = await Student.findById(id);
     if (!student) {
-      return res.status(404).json({ message: "Student not found." });
+      return res.status(404).json({ 
+        message: "Student not found",
+        success: false,
+        data: null
+      });
     }
 
     // Update text fields
@@ -252,59 +337,33 @@ exports.updateStudentProfile = async (req, res) => {
 
     // Email validation
     if (email && !/\S+@\S+\.\S+/.test(email)) {
-      return res.status(400).json({ message: "Invalid email format." });
+      return res.status(400).json({ 
+        message: "Invalid email format",
+        success: false,
+        data: null
+      });
     }
 
     await student.save();
 
     res.status(200).json({
       message: "Student profile updated successfully",
-      student: {
+      success: true,
+      data: {
         id: student._id,
         email: student.email,
         fullName: student.fullName,
         phoneNumber: student.phoneNumber,
         bio: student.bio,
         resume: student.resume || "",
-      },
+      }
     });
   } catch (error) {
     console.error("Update Profile Error:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-};
-
-// ============== Internship ==============
-
-exports.applyInternship = async (req, res) => {
-  try {
-    const studentId = req.body.studentId;
-    const resumeFile = req.file;
-
-    if (!studentId || !resumeFile) {
-      return res
-        .status(400)
-        .json({ error: "Student ID and resume are required" });
-    }
-
-    // Save resume path to student record in DB
-    const student = await Student.findByIdAndUpdate(
-      studentId,
-      { resume: resumeFile.path },
-      { new: true }
-    );
-
-    if (!student) {
-      return res.status(404).json({ error: "Student not found" });
-    }
-
-    res.json({
-      message: "Application submitted successfully",
-      studentId: student._id,
-      resumePath: resumeFile.path,
+    res.status(500).json({ 
+      message: "Internal server error",
+      success: false,
+      data: null
     });
-  } catch (err) {
-    console.error("Error applying for internship:", err);
-    res.status(500).json({ error: "Internal server error" });
   }
 };

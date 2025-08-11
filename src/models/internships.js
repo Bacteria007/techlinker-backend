@@ -2,6 +2,11 @@ const mongoose = require("mongoose");
 
 const internshipSchema = new mongoose.Schema(
   {
+    instituteId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Institute",
+      required: true,
+    },
     image: { type: String, required: true }, // Image URL or filename
     title: { type: String, required: true },
     education: { type: String },
@@ -15,8 +20,9 @@ const internshipSchema = new mongoose.Schema(
     experience: { type: String, required: true },
     description: { type: String },
     location: { type: String, required: true },
+    deadline: { type: Date, required: true },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("internship", internshipSchema);
+module.exports = mongoose.model("internships", internshipSchema);

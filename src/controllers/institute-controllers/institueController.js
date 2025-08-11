@@ -1,179 +1,211 @@
 const bcrypt = require("bcryptjs");
 const Institute = require("../../models/institutes");
 
-// Signup
+// 📌 Signup
 exports.signup = async (req, res) => {
   try {
-    const {
-      instituteName,
-      businessType,
-      email,
-      password,
-      phone,
-      city,
-      contactPerson,
-      address
-    } = req.body;
-
+    const { name, email, password, phone, website, about, address } = req.body;
+    console.log(name);
     // Check if email already exists
     const existingInstitute = await Institute.findOne({ email });
     if (existingInstitute) {
-      return res.status(400).json({ message: 'Email already registered' });
+      return res.status(400).json({
+        message: "Email already registered",
+        success: false,
+      });
     }
 
+     if (!email || !password) {
+      return res.status(400).json({ 
+        message: "Email and password are required",
+        success: false,
+        data: null
+      });
+    }
+
+    const emailRegex = /\S+@\S+\.\S+/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ 
+        message: "Invalid email format",
+        success: false,
+        data: null
+      });
+    }
+
+    if (password.length < 8) {
+      return res.status(400).json({ 
+        message: "Password must be at least 8 characters",
+        success: false,
+        data: null
+      });
+    }
+    
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newInstitute = new Institute({
-      instituteName,
-      businessType,
+      name,
+      website,
       email,
       password: hashedPassword,
       phone,
-      city,
-      contactPerson,
-      address
+      about,
+      address,
     });
-
     await newInstitute.save();
-    res.status(201).json({ message: 'Institute signup successful', institute: newInstitute });
+    const instituteData = newInstitute.toObject();
+    delete instituteData.password;
+    res.status(201).json({
+      message: "Institute signup successful",
+      data: instituteData,
+      success: true,
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    res.status(500).json({
+      message: "Server error",
+      success: false,
+    });
   }
 };
 
-// Login
+// 📌 Login
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
     const institute = await Institute.findOne({ email });
+
     if (!institute) {
-      return res.status(400).json({ message: 'Invalid email or password' });
+      return res.status(400).json({
+        message: "Invalid email or password",
+        success: false,
+      });
     }
 
     const isMatch = await bcrypt.compare(password, institute.password);
     if (!isMatch) {
-      return res.status(400).json({ message: 'Invalid email or password' });
+      return res.status(400).json({
+        message: "Invalid email or password",
+        success: false,
+      });
     }
 
+    const { password: _, ...instituteData } = institute.toObject(); // remove password
+
     res.json({
-      message: 'Login successful',
-      instituteId: institute._id,
-      instituteName: institute.instituteName,
-      email: institute.email
+      message: "Login successful",
+      data: instituteData,
+      success: true,
     });
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    res.status(500).json({
+      message: "Server error",
+      success: false,
+    });
   }
 };
 
-// Fetch profile
+// 📌 Fetch profile
 exports.getProfile = async (req, res) => {
   try {
-    const institute = await Institute.findById(req.params.id);
+    const institute = await Institute.findById(req.params.id).select(
+      "-password"
+    );
     if (!institute) {
-      return res.status(404).json({ message: "Institute not found" });
+      return res.status(404).json({
+        message: "Institute not found",
+        success: false,
+      });
     }
     res.json({
-      name: institute.instituteName,
-      email: institute.email,
-      phone: institute.phone,
-      businessType: institute.businessType,
-      city: institute.city,
-      contactPerson: institute.contactPerson,
-      address: institute.address,
+      message: "Profile fetched successfully",
+      data: institute,
+      success: true,
     });
   } catch (error) {
-    res.status(500).json({ message: "Error fetching profile", error: error.message });
+    res.status(500).json({
+      message: "Error fetching profile",
+      success: false,
+    });
   }
 };
 
-// Update profile
+// 📌 Update profile
 exports.updateProfile = async (req, res) => {
   try {
     const instituteId = req.params.id;
     const { name, email, phone } = req.body;
 
-    const existing = await Institute.findOne({ email, _id: { $ne: instituteId } });
+    const existing = await Institute.findOne({
+      email,
+      _id: { $ne: instituteId },
+    });
     if (existing) {
-      return res.status(400).json({ message: "Email already in use by another account." });
+      return res.status(400).json({
+        message: "Email already in use by another account.",
+        success: false,
+      });
     }
 
     const updatedInstitute = await Institute.findByIdAndUpdate(
       instituteId,
-      { instituteName: name, email, phone },
-      { new: true }
+      { name, email, phone },
+      { new: true, select: "-password" }
     );
 
     if (!updatedInstitute) {
-      return res.status(404).json({ message: "Institute not found." });
+      return res.status(404).json({
+        message: "Institute not found.",
+        success: false,
+      });
     }
 
-    res.json({ message: "Profile updated successfully", updatedInstitute });
+    res.json({
+      message: "Profile updated successfully",
+      data: updatedInstitute,
+      success: true,
+    });
   } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
+    res.status(500).json({
+      message: "Server error",
+      success: false,
+    });
   }
 };
 
-// Change password
+// 📌 Change password
 exports.changePassword = async (req, res) => {
   try {
     const { oldPassword, newPassword } = req.body;
     const institute = await Institute.findById(req.params.instituteId);
 
     if (!institute) {
-      return res.status(404).json({ message: "Institute not found" });
+      return res.status(404).json({
+        message: "Institute not found",
+        success: false,
+      });
     }
 
     const isMatch = await bcrypt.compare(oldPassword, institute.password);
     if (!isMatch) {
-      return res.status(400).json({ message: "Old password is incorrect" });
+      return res.status(400).json({
+        message: "Old password is incorrect",
+        success: false,
+      });
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     institute.password = hashedPassword;
     await institute.save();
 
-    res.json({ message: "Password changed successfully" });
+    res.json({
+      message: "Password changed successfully",
+      data: null,
+      success: true,
+    });
   } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
-  }
-};
-
-
-//======== institue settings =========//
-
-// Get institute settings
-exports.getSettings = async (req, res) => {
-  try {
-    const settings = await InstituteSetting.findOne({ instituteId: req.params.instituteId });
-    if (!settings) {
-      return res.json({
-        twoStepVerification: false,
-        profileVisibility: true,
-        readReceipts: true,
-        locationAccess: false,
-      });
-    }
-    res.json(settings);
-  } catch (err) {
-    res.status(500).json({ message: "Error fetching settings", error: err.message });
-  }
-};
-
-// Update or create institute settings
-exports.updateSettings = async (req, res) => {
-  try {
-    const id = new mongoose.Types.ObjectId(req.params.instituteId);
-    const { twoStepVerification, profileVisibility, readReceipts, locationAccess } = req.body;
-    
-    const filter = { instituteId: id };
-    const update = { twoStepVerification, profileVisibility, readReceipts, locationAccess };
-    const options = { upsert: true, new: true, setDefaultsOnInsert: true };
-
-    const settings = await InstituteSetting.findOneAndUpdate(filter, update, options);
-    res.json({ message: "Settings updated successfully", settings });
-  } catch (err) {
-    res.status(500).json({ message: "Error updating settings", error: err.message });
+    res.status(500).json({
+      message: "Server error",
+      success: false,
+    });
   }
 };
