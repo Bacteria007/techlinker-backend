@@ -1,4 +1,4 @@
-const Internship = require("../../models/internships"); 
+const Internship = require("../../models/internships");
 const Application = require("../../models/applicationModel");
 const Student = require("../../models/students");
 
@@ -18,10 +18,10 @@ exports.addInternship = async (req, res) => {
     } = req.body;
 
     if (!req.file) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         message: "Image is required",
         success: false,
-        data: null
+        data: null,
       });
     }
 
@@ -37,7 +37,7 @@ exports.addInternship = async (req, res) => {
       return res.status(400).json({
         message: `Missing required fields: ${missingFields.join(", ")}`,
         success: false,
-        data: null
+        data: null,
       });
     }
 
@@ -59,21 +59,21 @@ exports.addInternship = async (req, res) => {
     await newInternship.save();
 
     const count = await Internship.countDocuments({ _id: instituteId });
-    
+
     res.status(201).json({
       message: "Internship posted successfully",
       success: true,
       data: {
         internship: newInternship,
-        count
-      }
+        count,
+      },
     });
   } catch (error) {
     console.error("Error adding internship:", error);
-    res.status(500).json({ 
-      message: "Server error", 
+    res.status(500).json({
+      message: "Server error",
       success: false,
-      data: null
+      data: null,
     });
   }
 };
@@ -83,25 +83,25 @@ exports.getSingleInternship = async (req, res) => {
   try {
     const { id } = req.params;
     const internship = await Internship.findOne({ _id: id });
-    
+
     if (!internship) {
       return res.status(404).json({
         message: "Internship not found",
         success: false,
-        data: null
+        data: null,
       });
     }
 
     res.status(200).json({
       message: "Internship retrieved successfully",
       success: true,
-      data: internship
+      data: internship,
     });
   } catch (error) {
-    res.status(500).json({ 
-      message: "Failed to fetch internship", 
+    res.status(500).json({
+      message: "Failed to fetch internship",
       success: false,
-      data: null
+      data: null,
     });
   }
 };
@@ -114,17 +114,17 @@ exports.getInternships = async (req, res) => {
       limit > 0
         ? await Internship.find().sort({ createdAt: -1 }).limit(limit)
         : await Internship.find().sort({ createdAt: -1 });
-    
+
     res.status(200).json({
       message: "Internships retrieved successfully",
       success: true,
-      data: internships
+      data: internships,
     });
   } catch (error) {
-    res.status(500).json({ 
-      message: "Failed to fetch internships", 
+    res.status(500).json({
+      message: "Failed to fetch internships",
       success: false,
-      data: null
+      data: null,
     });
   }
 };
@@ -143,15 +143,15 @@ exports.getInternshipsByInstitute = async (req, res) => {
       success: true,
       data: {
         count: internships.length,
-        internships
-      }
+        internships,
+      },
     });
   } catch (error) {
     console.error("Error fetching internships by institute:", error);
-    res.status(500).json({ 
-      message: "Server error", 
+    res.status(500).json({
+      message: "Server error",
       success: false,
-      data: null
+      data: null,
     });
   }
 };
@@ -162,25 +162,25 @@ exports.deleteInternship = async (req, res) => {
     const internship = await Internship.findByIdAndDelete(req.params.id);
 
     if (!internship) {
-      return res.status(404).json({ 
+      return res.status(404).json({
         message: "Internship not found",
         success: false,
-        data: null
+        data: null,
       });
     }
-    
+
     const count = await Internship.countDocuments();
 
-    res.status(200).json({ 
-      message: "Internship deleted successfully", 
+    res.status(200).json({
+      message: "Internship deleted successfully",
       success: true,
-      data: { count }
+      data: { count },
     });
   } catch (error) {
-    res.status(500).json({ 
+    res.status(500).json({
       message: "Server error while deleting internship",
       success: false,
-      data: null
+      data: null,
     });
   }
 };
@@ -189,17 +189,17 @@ exports.deleteInternship = async (req, res) => {
 exports.countInternships = async (req, res) => {
   try {
     const count = await Internship.countDocuments();
-    
-    res.status(200).json({ 
+
+    res.status(200).json({
       message: "Internships count retrieved successfully",
       success: true,
-      data: { count }
+      data: { count },
     });
   } catch (err) {
-    res.status(500).json({ 
+    res.status(500).json({
       message: "Failed to count internships",
       success: false,
-      data: null
+      data: null,
     });
   }
 };
@@ -208,20 +208,20 @@ exports.countInternships = async (req, res) => {
 exports.checkInternships = async (req, res) => {
   try {
     const data = await Internship.find();
-    
-    res.status(200).json({ 
+
+    res.status(200).json({
       message: "Internships data retrieved successfully",
       success: true,
-      data: { 
-        total: data.length, 
-        internships: data 
-      }
+      data: {
+        total: data.length,
+        internships: data,
+      },
     });
   } catch (error) {
-    res.status(500).json({ 
+    res.status(500).json({
       message: "Failed to retrieve internships data",
       success: false,
-      data: null
+      data: null,
     });
   }
 };
@@ -247,13 +247,13 @@ exports.getActiveMonthInternships = async (req, res) => {
     res.status(200).json({
       message: "Active month internships retrieved successfully",
       success: true,
-      data: activeInternships
+      data: activeInternships,
     });
   } catch (error) {
     res.status(500).json({
       message: "Failed to fetch active internships",
       success: false,
-      data: null
+      data: null,
     });
   }
 };
@@ -267,7 +267,7 @@ exports.searchInternship = async (req, res) => {
       return res.status(400).json({
         message: "Please provide a search query",
         success: false,
-        data: null
+        data: null,
       });
     }
 
@@ -284,15 +284,15 @@ exports.searchInternship = async (req, res) => {
       success: true,
       data: {
         count: internships.length,
-        internships
-      }
+        internships,
+      },
     });
   } catch (err) {
     console.error("Error searching internships:", err);
     res.status(500).json({
       message: "Server error while searching internships",
       success: false,
-      data: null
+      data: null,
     });
   }
 };
@@ -301,32 +301,33 @@ exports.applyInternship = async (req, res) => {
   try {
     const { studentId, internshipId } = req.body;
     const resumeFile = req.file;
-
+    console.log(studentId, internshipId,resumeFile,'ids');
     if (!studentId || !internshipId || !resumeFile) {
-      return res.status(400).json({ 
+      console.log("Student ID, internship ID, and resume are required")
+      return res.status(400).json({
         message: "Student ID, internship ID, and resume are required",
         success: false,
-        data: null
+        data: null,
       });
     }
 
     // Check if student exists
     const student = await Student.findById(studentId);
     if (!student) {
-      return res.status(404).json({ 
+      return res.status(404).json({
         message: "Student not found",
         success: false,
-        data: null
+        data: null,
       });
     }
 
     // Check if internship exists
     const internship = await Internship.findById(internshipId);
     if (!internship) {
-      return res.status(404).json({ 
+      return res.status(404).json({
         message: "Internship not found",
         success: false,
-        data: null
+        data: null,
       });
     }
 
@@ -336,10 +337,10 @@ exports.applyInternship = async (req, res) => {
       internshipId,
     });
     if (existingApplication) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         message: "Student has already applied for this internship",
         success: false,
-        data: null
+        data: null,
       });
     }
 
@@ -365,14 +366,14 @@ exports.applyInternship = async (req, res) => {
         studentId: student._id,
         internshipId: internship._id,
         resumePath: resumePath,
-      }
+      },
     });
   } catch (err) {
     console.error("Error applying for internship:", err);
-    res.status(500).json({ 
+    res.status(500).json({
       message: "Internal server error",
       success: false,
-      data: null
+      data: null,
     });
   }
 };
@@ -391,24 +392,24 @@ exports.getAppliedInternships = async (req, res) => {
       .select("internshipId appliedAt");
 
     if (!applications.length) {
-      return res.status(404).json({ 
+      return res.status(404).json({
         message: "No internships applied by this student",
         success: false,
-        data: null
+        data: null,
       });
     }
 
     res.status(200).json({
       message: "Applied internships retrieved successfully",
       success: true,
-      data: applications
+      data: applications,
     });
   } catch (err) {
     console.error("Error fetching applied internships:", err);
-    res.status(500).json({ 
+    res.status(500).json({
       message: "Internal server error",
       success: false,
-      data: null
+      data: null,
     });
   }
 };
@@ -426,24 +427,24 @@ exports.getInternshipApplicants = async (req, res) => {
       .select("studentId resume appliedAt");
 
     if (!applications.length) {
-      return res.status(404).json({ 
+      return res.status(404).json({
         message: "No applicants for this internship",
         success: false,
-        data: null
+        data: null,
       });
     }
 
     res.status(200).json({
       message: "Applicants retrieved successfully",
       success: true,
-      data: applications
+      data: applications,
     });
   } catch (err) {
     console.error("Error fetching internship applicants:", err);
-    res.status(500).json({ 
+    res.status(500).json({
       message: "Internal server error",
       success: false,
-      data: null
+      data: null,
     });
   }
 };
@@ -468,14 +469,15 @@ exports.getStudentAppliedInternships = async (req, res) => {
     const applications = await Application.find({ studentId })
       .populate({
         path: "internshipId",
-        select: "title instituteId type location deadline image description stipend experience education",
+        select:
+          "title instituteId type location deadline image description stipend experience education",
         populate: {
           path: "instituteId",
           select: "name",
         },
       })
       .select("internshipId appliedAt resume")
-      .sort({ appliedAt: -1 }); 
+      .sort({ appliedAt: -1 });
 
     if (!applications.length) {
       return res

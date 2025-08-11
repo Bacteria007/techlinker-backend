@@ -13,6 +13,6 @@ router.post("/signup", signup);
 router.post("/login", login);
 router.get("/:id", getProfile);
 router.put("/update-profile/:id", updateProfile);
-router.post("/change-password/:instituteId", changePassword);
+router.post("/change-password/:id", changePassword);
 
 module.exports = router;

@@ -8,7 +8,7 @@ const instituteSchema = new mongoose.Schema({
   phone: { type: String, required: true },
   website: { type: String },
   about: { type: String },
-  address: { type: String, required: true },
+  address: { type: String },
   role: {
     type: String,
     default: userType.INSTITUE,

@@ -5,7 +5,7 @@ const Institute = require("../../models/institutes");
 exports.signup = async (req, res) => {
   try {
     const { name, email, password, phone, website, about, address } = req.body;
-    console.log(name, email, password, phone, website, about, address );
+    console.log(name, email, password, phone, website, about, address);
     // Check if email already exists
     const existingInstitute = await Institute.findOne({ email });
     if (existingInstitute) {
@@ -15,31 +15,31 @@ exports.signup = async (req, res) => {
       });
     }
 
-       if (!email || !password) {
-      return res.status(400).json({ 
+    if (!email || !password) {
+      return res.status(400).json({
         message: "Email and password are required",
         success: false,
-        data: null
+        data: null,
       });
     }
 
     const emailRegex = /\S+@\S+\.\S+/;
     if (!emailRegex.test(email)) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         message: "Invalid email format",
         success: false,
-        data: null
+        data: null,
       });
     }
 
     if (password.length < 8) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         message: "Password must be at least 8 characters",
         success: false,
-        data: null
+        data: null,
       });
     }
-    
+
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -133,7 +133,7 @@ exports.getProfile = async (req, res) => {
 exports.updateProfile = async (req, res) => {
   try {
     const instituteId = req.params.id;
-    const { name, email, phone } = req.body;
+    const { name, email, phone, about, website, address } = req.body;
 
     const existing = await Institute.findOne({
       email,
@@ -148,7 +148,7 @@ exports.updateProfile = async (req, res) => {
 
     const updatedInstitute = await Institute.findByIdAndUpdate(
       instituteId,
-      { name, email, phone },
+      { name, email, phone, about, website, address },
       { new: true, select: "-password" }
     );
 
@@ -176,7 +176,7 @@ exports.updateProfile = async (req, res) => {
 exports.changePassword = async (req, res) => {
   try {
     const { oldPassword, newPassword } = req.body;
-    const institute = await Institute.findById(req.params.instituteId);
+    const institute = await Institute.findById(req.params.id);
 
     if (!institute) {
       return res.status(404).json({

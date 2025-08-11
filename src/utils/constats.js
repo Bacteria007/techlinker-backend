@@ -10,7 +10,7 @@ exports.requiredProps = {
 };
 
 exports.userType = {
-  ADMIN: "1",
-  STUDENT: "2",
-  INSTITUE: "3",
+  ADMIN: "admin",
+  STUDENT: "student",
+  INSTITUE: "institute",
 };

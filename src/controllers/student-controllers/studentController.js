@@ -159,7 +159,7 @@ exports.resetPassword = async (req, res) => {
 
     // Generate a 6-digit OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const otpExpiry = Date.now() + 2 * 60 * 1000; // 2 minutes expiry
+    const otpExpiry = Date.now() + 2 * 60 * 1000;
 
     // Save OTP and expiry to student
     student.resetPasswordToken = otp;
