@@ -5,7 +5,7 @@ const internshipSchema = new mongoose.Schema(
   {
     instituteId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Institute",
+      ref: "institutes",
       required: true,
     },
     image: { type: String, required: true }, // Image URL or filename
@@ -17,7 +17,7 @@ const internshipSchema = new mongoose.Schema(
       required: true,
     },
     datePosted: { type: Date, default: Date.now },
-    experience: { type: String, required: true },
+    joblevel: { type: String, required: true },
     description: { type: String },
     location: { type: String, required: true },
     deadline: { type: Date, required: true },
