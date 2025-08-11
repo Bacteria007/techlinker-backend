@@ -12,7 +12,7 @@ exports.addInternship = async (req, res) => {
       type,
       education,
       stipend,
-      experience,
+      joblevel,
       instituteId,
       deadline,
     } = req.body;
@@ -28,7 +28,7 @@ exports.addInternship = async (req, res) => {
     const missingFields = [];
     if (!title) missingFields.push("title");
     if (!type) missingFields.push("type");
-    if (!experience) missingFields.push("experience");
+    if (!joblevel) missingFields.push("joblevel");
     if (!location) missingFields.push("location");
     if (!instituteId) missingFields.push("instituteId");
     if (!deadline) missingFields.push("deadline");
@@ -52,7 +52,7 @@ exports.addInternship = async (req, res) => {
       type,
       education,
       stipend,
-      experience,
+      joblevel,
       deadline,
     });
 
@@ -470,7 +470,7 @@ exports.getStudentAppliedInternships = async (req, res) => {
       .populate({
         path: "internshipId",
         select:
-          "title instituteId type location deadline image description stipend experience education",
+          "title instituteId type location deadline image description stipend joblevel education",
         populate: {
           path: "instituteId",
           select: "name",
@@ -496,7 +496,7 @@ exports.getStudentAppliedInternships = async (req, res) => {
       image: app.internshipId.image,
       description: app.internshipId.description,
       stipend: app.internshipId.stipend,
-      experience: app.internshipId.experience,
+      joblevel: app.internshipId.joblevel,
       education: app.internshipId.education,
       appliedAt: app.appliedAt,
       resume: app.resume,
