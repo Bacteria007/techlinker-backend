@@ -19,7 +19,7 @@ const internshipSchema = new mongoose.Schema(
     datePosted: { type: Date, default: Date.now },
     joblevel: { type: String, required: true },
     description: { type: String },
-    location: { type: String, required: true },
+    location: { type: String },
     deadline: { type: Date, required: true },
     role: {
       type: String,
