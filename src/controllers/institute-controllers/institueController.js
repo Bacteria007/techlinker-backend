@@ -15,15 +15,7 @@ exports.signup = async (req, res) => {
       });
     }
 
-    if (!req.file) {
-      return res.status(400).json({ 
-        message: "Image is required",
-        success: false,
-        data: null
-      });
-    }
-    
-     if (!email || !password) {
+       if (!email || !password) {
       return res.status(400).json({ 
         message: "Email and password are required",
         success: false,
@@ -50,7 +42,6 @@ exports.signup = async (req, res) => {
     
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
-    const filePath = `/uploads/assets/profiles/institute/${req.file.filename}`;
 
     const newInstitute = new Institute({
       name,
@@ -60,7 +51,6 @@ exports.signup = async (req, res) => {
       phone,
       about,
       address,
-      image: filePath,
     });
     await newInstitute.save();
     const instituteData = newInstitute.toObject();

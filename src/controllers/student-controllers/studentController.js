@@ -20,14 +20,7 @@ exports.signup = async (req, res) => {
   try {
     const { email, password, name } = req.body;
 
-     if (!req.file) {
-      return res.status(400).json({ 
-        message: "Avatar is required",
-        success: false,
-        data: null
-      });
-    }
-
+   
     if (!email || !password) {
       return res.status(400).json({ 
         message: "Email and password are required",
@@ -63,13 +56,11 @@ exports.signup = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const filePath = `/uploads/assets/profile/student/${req.file.filename}`;
 
     const student = new Student({
       email,
       password: hashedPassword,
       name: name || "",
-      avatar:filePath
     });
 
     await student.save();
@@ -110,7 +101,7 @@ exports.login = async (req, res) => {
     const student = await Student.findOne({ email });
     if (!student) {
       return res.status(401).json({ 
-        message: "Invalid email or password",
+        message: "User not found",
         success: false,
         data: null
       });
@@ -119,7 +110,7 @@ exports.login = async (req, res) => {
     const isValidPassword = await bcrypt.compare(password, student.password);
     if (!isValidPassword) {
       return res.status(401).json({ 
-        message: "Wrong password",
+        message: "Invalid email or password",
         success: false,
         data: null
       });
@@ -303,6 +294,7 @@ exports.getStudentProfile = async (req, res) => {
         phoneNumber: student.phoneNumber,
         bio: student.bio,
         resume: student.resume || "",
+        avatar:student.avatar
       }
     });
   } catch (error) {
@@ -336,6 +328,7 @@ exports.updateStudentProfile = async (req, res) => {
         data: null
       });
     }
+
 
     // Update text fields
     if (name !== undefined) student.name = name;

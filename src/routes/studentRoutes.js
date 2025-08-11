@@ -17,7 +17,7 @@ const router = express.Router();
 // =================== START =====================
 
 // auth
-router.post("/signup", studentAvatarMW, signup);
+router.post("/signup",  signup);
 router.post("/login", login);
 router.post("/reset-password", resetPassword);
 router.post("/verify-otp", verifyOtpAndResetPassword);

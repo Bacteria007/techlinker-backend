@@ -45,7 +45,6 @@ const studentSchema = new mongoose.Schema(
     },
     resetPasswordToken: { type: String },
     resetPasswordExpires: { type: Date },
-    avatar: { type: String, required: true },
   },
   { timestamps: true }
 );

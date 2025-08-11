@@ -13,7 +13,6 @@ const instituteSchema = new mongoose.Schema({
     type: String,
     default: userType.INSTITUE,
   },
-  image: { type: String, required: true },
 });
 
 const Institute = mongoose.model("institutes", instituteSchema);
