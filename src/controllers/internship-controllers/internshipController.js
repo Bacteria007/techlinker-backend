@@ -29,7 +29,6 @@ exports.addInternship = async (req, res) => {
     if (!title) missingFields.push("title");
     if (!type) missingFields.push("type");
     if (!joblevel) missingFields.push("joblevel");
-    if (!location) missingFields.push("location");
     if (!instituteId) missingFields.push("instituteId");
     if (!deadline) missingFields.push("deadline");
 
