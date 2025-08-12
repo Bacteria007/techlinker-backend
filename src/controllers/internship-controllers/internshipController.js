@@ -133,18 +133,36 @@ exports.getInternshipsByInstitute = async (req, res) => {
   try {
     const { instituteId } = req.params;
 
-    const internships = await Internship.find({ instituteId }).sort({
-      createdAt: -1,
+    // Find internships of this institute and populate applications + student details
+    const internships = await Internship.find({ instituteId })
+      .sort({ createdAt: -1 })
+      .lean(); // lean for plain objects
+
+    // Get all internship IDs
+    const internshipIds = internships.map(i => i._id);
+
+    // Find applications for these internships
+    const applications = await Application.find({ internshipId: { $in: internshipIds } })
+      .populate("studentId", "name email phone") // only select necessary fields
+      .lean();
+
+    // Merge applications into internships
+    const internshipsWithApplicants = internships.map(internship => {
+      return {
+        ...internship,
+        applicants: applications.filter(app => String(app.internshipId) === String(internship._id))
+      };
     });
 
     res.status(200).json({
-      message: "Institute internships retrieved successfully",
+      message: "Institute internships with applicants retrieved successfully",
       success: true,
       data: {
-        count: internships.length,
-        internships,
+        count: internshipsWithApplicants.length,
+        internships: internshipsWithApplicants
       },
     });
+
   } catch (error) {
     console.error("Error fetching internships by institute:", error);
     res.status(500).json({
@@ -154,6 +172,7 @@ exports.getInternshipsByInstitute = async (req, res) => {
     });
   }
 };
+
 
 // 🗑 DELETE: Internship by ID
 exports.deleteInternship = async (req, res) => {

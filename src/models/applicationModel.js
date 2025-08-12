@@ -14,7 +14,7 @@ const applicationSchema = new mongoose.Schema(
     },
     resume: {
       type: String,
-      required: true,
+      
     },
     appliedAt: {
       type: Date,

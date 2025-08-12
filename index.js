@@ -28,10 +28,12 @@ app.use("/api/internship", internshipRoutes);
 app.use("/api/messages", messageRoutes);
 
 app.get("/health", (req, res) => {
+  console.log('healthy=====')
   res.send("API is running...");
 });
 
 app.listen(PORT, () => {
+
 console.log(`🚀 Server running on port ${PORT}`);
 });
 

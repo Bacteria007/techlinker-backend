@@ -62,7 +62,7 @@ const internshipImageMW = createUploadMiddleware(
 module.exports = {
   resumePdfMW,
   internshipImageMW,
-  createUploadMiddleware,
+  // createUploadMiddleware,
   // institueImageMW,
   // studentAvatarMW,
 };
