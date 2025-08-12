@@ -328,9 +328,9 @@ exports.searchInternship = async (req, res) => {
 exports.applyInternship = async (req, res) => {
   try {
     const { studentId, internshipId } = req.body;
-    const resumeFile = req.file;
-    console.log(studentId, internshipId,resumeFile,'ids');
-    if (!studentId || !internshipId || !resumeFile) {
+    // const resumeFile = req.file;
+    // console.log(studentId, internshipId,resumeFile,'ids');
+    if (!studentId || !internshipId) {
       console.log("Student ID, internship ID, and resume are required")
       return res.status(400).json({
         message: "Student ID, internship ID, and resume are required",
@@ -376,13 +376,13 @@ exports.applyInternship = async (req, res) => {
     const application = new Application({
       studentId,
       internshipId,
-      resume: resumeFile.path,
+      // resume: resumeFile.path,
     });
 
     await application.save();
 
     // Normalize resume path to use forward slashes
-    const resumePath = resumeFile.path.replace(/\\/g, "/");
+    // const resumePath = resumeFile.path.replace(/\\/g, "/");
 
     await student.save();
 
@@ -393,7 +393,7 @@ exports.applyInternship = async (req, res) => {
         applicationId: application._id,
         studentId: student._id,
         internshipId: internship._id,
-        resumePath: resumePath,
+        // resumePath: resumePath,
       },
     });
   } catch (err) {

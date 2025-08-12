@@ -26,7 +26,7 @@ router.get(
   getInternshipsByInstitute
 );
 router.get("/search", searchInternship);
-router.post("/apply", resumePdfMW, applyInternship);
+router.post("/apply", applyInternship);
 router.get("/institute/:internshipId/applicants", getInternshipApplicants);
 router.get("/student/:studentId/applied-internships", getStudentAppliedInternships);
 

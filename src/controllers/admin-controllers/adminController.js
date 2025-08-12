@@ -2,39 +2,31 @@ const Admin = require("../../models/admins");
 const Student = require("../../models/students");
 const Internship = require("../../models/internships");
 const Institute = require("../../models/institutes");
-const Application = require("../../models/applicationModel"); 
+const Application = require("../../models/applicationModel");
 // Admin Login (existing)
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Find admin by email
-    const admin = await Admin.findOne({ email });
-    if (!admin) {
+    const ADMIN_EMAIL = "admin@gmail.com";
+    const ADMIN_PASSWORD = "admin1234";
+
+    // Check if credentials match
+    if (email !== ADMIN_EMAIL || password !== ADMIN_PASSWORD) {
       return res.status(401).json({
-        message: "Invalid email or password",
         success: false,
+        message: "Invalid email or password",
         data: null,
       });
     }
 
-    // Plain text password check
-    if (password !== admin.password) {
-      return res.status(401).json({
-        message: "Invalid email or password",
-        success: false,
-        data: null,
-      });
-    }
-
-    // Login successful
-    res.status(200).json({
-      message: "Login successful",
+    // If match, return success (you can also generate JWT here)
+    return res.status(200).json({
       success: true,
+      message: "Admin login successful",
       data: {
-        id: admin._id,
-        name: admin.name,
-        email: admin.email,
+        email: ADMIN_EMAIL,
+        role: "admin",
       },
     });
   } catch (error) {
@@ -103,7 +95,9 @@ exports.getActiveInternships = async (req, res) => {
     const activeInternships = await Internship.find()
       .sort({ createdAt: -1 })
       .limit(2)
-      .select("title type location description createdAt datePosted joblevel deadline")
+      .select(
+        "title type location description createdAt datePosted joblevel deadline"
+      )
       .populate("instituteId", "name");
 
     res.status(200).json({
@@ -133,17 +127,20 @@ exports.getPartnerInstitutes = async (req, res) => {
     // Fetch internship count for each institute
     const institutesWithInternshipCount = await Promise.all(
       partnerInstitutes.map(async (institute) => {
-        const internshipCount = await Internship.countDocuments({ instituteId: institute._id });
+        const internshipCount = await Internship.countDocuments({
+          instituteId: institute._id,
+        });
 
         return {
           ...institute,
-          internshipCount
+          internshipCount,
         };
       })
     );
 
     res.status(200).json({
-      message: "Partner institutes with internship count retrieved successfully",
+      message:
+        "Partner institutes with internship count retrieved successfully",
       success: true,
       data: institutesWithInternshipCount,
     });
@@ -156,7 +153,6 @@ exports.getPartnerInstitutes = async (req, res) => {
     });
   }
 };
-
 
 // Get Recent Activity (for dashboard)
 exports.getRecentActivity = async (req, res) => {
@@ -193,7 +189,9 @@ exports.getRecentActivity = async (req, res) => {
       ...recentInternships.map((internship) => ({
         type: "internship_posted",
         title: "Internship posted",
-        subtitle: `${internship.title} at ${internship.instituteId?.name || "Unknown Institute"}`,
+        subtitle: `${internship.title} at ${
+          internship.instituteId?.name || "Unknown Institute"
+        }`,
         time: internship.createdAt,
         icon: "work",
         color: "#2196F3",
@@ -229,9 +227,7 @@ exports.getRecentActivity = async (req, res) => {
 
 exports.getAllStudents = async (req, res) => {
   try {
-    const students = await Student.find()
-      .lean()
-      .exec();
+    const students = await Student.find().lean().exec();
 
     const studentsWithApplications = await Promise.all(
       students.map(async (student) => {
@@ -268,11 +264,10 @@ exports.getAllStudents = async (req, res) => {
       message: "Server error",
     });
   }
-}
+};
 exports.getAllinstitutes = async (req, res) => {
   try {
-    const institutes = await Institute.find()
-     
+    const institutes = await Institute.find();
 
     res.status(200).json({
       success: true,
