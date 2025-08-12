@@ -153,7 +153,7 @@ exports.getInternshipsByInstitute = async (req, res) => {
 
     // Find applications for these internships
     const applications = await Application.find({ internshipId: { $in: internshipIds } })
-      .populate("studentId", "name email phoneNumber bio") // only select necessary fields
+      .populate("studentId", "name email phone bio") // only select necessary fields
       .lean();
 
     // Merge applications into internships

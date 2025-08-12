@@ -291,7 +291,7 @@ exports.getStudentProfile = async (req, res) => {
         id: student._id,
         email: student.email,
         name: student.name,
-        phoneNumber: student.phoneNumber,
+        phone: student.phone,
         bio: student.bio,
         resume: student.resume || "",
         avatar:student.avatar
@@ -310,7 +310,7 @@ exports.getStudentProfile = async (req, res) => {
 exports.updateStudentProfile = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, email, phoneNumber, bio } = req.body;
+    const { name, email, phone, bio } = req.body;
 
     if (!id) {
       return res.status(400).json({ 
@@ -333,7 +333,7 @@ exports.updateStudentProfile = async (req, res) => {
     // Update text fields
     if (name !== undefined) student.name = name;
     if (email !== undefined) student.email = email;
-    if (phoneNumber !== undefined) student.phoneNumber = phoneNumber;
+    if (phone !== undefined) student.phone = phone;
     if (bio !== undefined) student.bio = bio;
 
     // ✅ Save uploaded resume path
@@ -360,7 +360,7 @@ exports.updateStudentProfile = async (req, res) => {
         id: student._id,
         email: student.email,
         name: student.name,
-        phoneNumber: student.phoneNumber,
+        phone: student.phone,
         bio: student.bio,
         resume: student.resume || "",
       }
