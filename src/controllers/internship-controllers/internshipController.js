@@ -108,18 +108,28 @@ exports.getSingleInternship = async (req, res) => {
 // ✅ GET: All internships (with optional limit)
 exports.getInternships = async (req, res) => {
   try {
-    const limit = parseInt(req.query.limit) || 0;
-    const internships =
-      limit > 0
-        ? await Internship.find().sort({ createdAt: -1 }).limit(limit)
-        : await Internship.find().sort({ createdAt: -1 });
+    const internships = await Internship.find().sort({ createdAt: -1 });
+
+    // Log raw instituteId values for debugging
+    console.log(
+      "Raw instituteIds:",
+      internships.map((i) => i.instituteId)
+    );
+
+    const populatedInternships = await Internship.find()
+      .populate({
+        path: "instituteId",
+        select: "-password",
+      })
+      .sort({ createdAt: -1 });
 
     res.status(200).json({
       message: "Internships retrieved successfully",
       success: true,
-      data: internships,
+      data: populatedInternships,
     });
   } catch (error) {
+    console.error("Error fetching internships:", error);
     res.status(500).json({
       message: "Failed to fetch internships",
       success: false,
@@ -143,7 +153,7 @@ exports.getInternshipsByInstitute = async (req, res) => {
 
     // Find applications for these internships
     const applications = await Application.find({ internshipId: { $in: internshipIds } })
-      .populate("studentId", "name email phone") // only select necessary fields
+      .populate("studentId", "name email phoneNumber bio") // only select necessary fields
       .lean();
 
     // Merge applications into internships

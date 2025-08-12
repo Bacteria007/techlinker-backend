@@ -15,20 +15,16 @@ const {
 } = require("../controllers/internship-controllers/internshipController");
 const { internshipImageMW, resumePdfMW } = require("../middlewares/profile");
 
-// 📬 POST
-router.post("/add", internshipImageMW, addInternship);
-
 // ✅ GET All internships
 router.get("/", getInternships);
+// 📬 POST
+router.post("/add", internshipImageMW, addInternship);
 router.get("/details/:id", getSingleInternship);
-
 // ✅ GET All internships of a specific institue
 router.get(
   "/institute/:instituteId",
   getInternshipsByInstitute
 );
-
-
 router.get("/search", searchInternship);
 router.post("/apply", resumePdfMW, applyInternship);
 router.get("/institute/:internshipId/applicants", getInternshipApplicants);
