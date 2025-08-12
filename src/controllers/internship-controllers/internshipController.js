@@ -106,6 +106,24 @@ exports.getSingleInternship = async (req, res) => {
 };
 
 // ✅ GET: All internships (with optional limit)
+exports.getAllSimpleInternships = async (req, res) => {
+  try {
+    const internships = await Internship.find().sort({ createdAt: -1 });
+
+    res.status(200).json({
+      message: "Internships retrieved successfully",
+      success: true,
+      data: internships,
+    });
+  } catch (error) {
+    console.error("Error fetching internships:", error);
+    res.status(500).json({
+      message: "Failed to fetch internships",
+      success: false,
+      data: null,
+    });
+  }
+};
 exports.getInternships = async (req, res) => {
   try {
     const internships = await Internship.find().sort({ createdAt: -1 });
@@ -327,20 +345,19 @@ exports.searchInternship = async (req, res) => {
 
 exports.applyInternship = async (req, res) => {
   try {
-    const { studentId, internshipId } = req.body;
-    // const resumeFile = req.file;
-    // console.log(studentId, internshipId,resumeFile,'ids');
-    if (!studentId || !internshipId) {
-      console.log("Student ID, internship ID, and resume are required")
+    const { sid,iid } = req.params;
+    console.log(sid,iid)
+    if (!sid || !iid) {
+      console.log("Student ID, internship ID required")
       return res.status(400).json({
-        message: "Student ID, internship ID, and resume are required",
+        message: "Student ID, internship ID required",
         success: false,
         data: null,
       });
     }
 
     // Check if student exists
-    const student = await Student.findById(studentId);
+    const student = await Student.findById(sid);
     if (!student) {
       return res.status(404).json({
         message: "Student not found",
@@ -350,7 +367,7 @@ exports.applyInternship = async (req, res) => {
     }
 
     // Check if internship exists
-    const internship = await Internship.findById(internshipId);
+    const internship = await Internship.findById(iid);
     if (!internship) {
       return res.status(404).json({
         message: "Internship not found",
@@ -361,8 +378,8 @@ exports.applyInternship = async (req, res) => {
 
     // Check if student has already applied
     const existingApplication = await Application.findOne({
-      studentId,
-      internshipId,
+      studentId:sid,
+      internshipId:iid,
     });
     if (existingApplication) {
       return res.status(400).json({
@@ -374,8 +391,8 @@ exports.applyInternship = async (req, res) => {
 
     // Create new application
     const application = new Application({
-      studentId,
-      internshipId,
+      studentId:sid,
+      internshipId:iid,
       // resume: resumeFile.path,
     });
 

@@ -11,12 +11,14 @@ const {
   getInternshipsByInstitute,getSingleInternship,
   applyInternship,
   getInternshipApplicants,
-  getStudentAppliedInternships
+  getStudentAppliedInternships,
+  getAllSimpleInternships
 } = require("../controllers/internship-controllers/internshipController");
 const { internshipImageMW, resumePdfMW } = require("../middlewares/profile");
 
 // ✅ GET All internships
-router.get("/", getInternships);
+router.get("/", getAllSimpleInternships);
+router.get("/all", getInternships);
 // 📬 POST
 router.post("/add", internshipImageMW, addInternship);
 router.get("/details/:id", getSingleInternship);
@@ -26,7 +28,7 @@ router.get(
   getInternshipsByInstitute
 );
 router.get("/search", searchInternship);
-router.post("/apply", applyInternship);
+router.post("/apply/:sid/:iid", applyInternship);
 router.get("/institute/:internshipId/applicants", getInternshipApplicants);
 router.get("/student/:studentId/applied-internships", getStudentAppliedInternships);
 
