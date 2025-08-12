@@ -18,7 +18,7 @@ const transporter = nodemailer.createTransport({
 
 exports.signup = async (req, res) => {
   try {
-    const { email, password, name } = req.body;
+    const { email, password, name,phone } = req.body;
 
    
     if (!email || !password) {
@@ -61,6 +61,7 @@ exports.signup = async (req, res) => {
       email,
       password: hashedPassword,
       name: name || "",
+      phone:phone
     });
 
     await student.save();
@@ -72,7 +73,8 @@ exports.signup = async (req, res) => {
         id: student._id,
         email: student.email,
         name: student.name,
-        role: student.role
+        role: student.role,
+        phone:student.phone
       }
     });
   } catch (error) {

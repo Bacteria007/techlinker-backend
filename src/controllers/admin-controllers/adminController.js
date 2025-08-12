@@ -2,7 +2,7 @@ const Admin = require("../../models/admins");
 const Student = require("../../models/students");
 const Internship = require("../../models/internships");
 const Institute = require("../../models/institutes");
-
+const Application = require("../../models/applicationModel"); 
 // Admin Login (existing)
 exports.login = async (req, res) => {
   try {
@@ -223,6 +223,67 @@ exports.getRecentActivity = async (req, res) => {
       message: "Server error retrieving recent activities",
       success: false,
       data: null,
+    });
+  }
+};
+
+exports.getAllStudents = async (req, res) => {
+  try {
+    const students = await Student.find()
+      .lean()
+      .exec();
+
+    const studentsWithApplications = await Promise.all(
+      students.map(async (student) => {
+        const applications = await Application.find({ studentId: student._id })
+          .populate({
+            path: "internshipId",
+            model: "internships",
+            populate: {
+              path: "instituteId",
+              model: "institutes",
+            },
+          })
+          .lean();
+
+        return {
+          ...student,
+          appliedInternships: applications.map((app) => ({
+            internship: app.internshipId,
+            appliedAt: app.appliedAt,
+          })),
+        };
+      })
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Students with applied internships fetched successfully",
+      data: studentsWithApplications,
+    });
+  } catch (error) {
+    console.error("Error fetching students with internships:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+}
+exports.getAllinstitutes = async (req, res) => {
+  try {
+    const institutes = await Institute.find()
+     
+
+    res.status(200).json({
+      success: true,
+      message: "Institutes with applied internships fetched successfully",
+      data: institutes,
+    });
+  } catch (error) {
+    console.error("Error fetching Institutes with internships:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
     });
   }
 };
