@@ -6,6 +6,7 @@ const {
   changePassword,
   getProfile,
   updateProfile,
+  deleteInstitute,
 } = require("../controllers/institute-controllers/institueController");
 
 
@@ -14,5 +15,6 @@ router.post("/login", login);
 router.get("/:id", getProfile);
 router.put("/update-profile/:id", updateProfile);
 router.post("/change-password/:id", changePassword);
+router.delete("/:id", deleteInstitute);
 
 module.exports = router;

@@ -3,37 +3,60 @@ const Student = require("../../models/students");
 const Internship = require("../../models/internships");
 const Institute = require("../../models/institutes");
 const Application = require("../../models/applicationModel");
-// Admin Login (existing)
+
+// Login endpoint
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
-
     const ADMIN_EMAIL = "admin@gmail.com";
     const ADMIN_PASSWORD = "admin1234";
 
-    // Check if credentials match
-    if (email !== ADMIN_EMAIL || password !== ADMIN_PASSWORD) {
-      return res.status(401).json({
+    // Validate input
+    if (!email || !password) {
+      return res.status(400).json({
         success: false,
-        message: "Invalid email or password",
+        message: 'Email and password are required',
         data: null,
       });
     }
 
-    // If match, return success (you can also generate JWT here)
+    // Check if credentials match hardcoded values
+    if (email !== ADMIN_EMAIL || password !== ADMIN_PASSWORD) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid email or password',
+        data: null,
+      });
+    }
+
+    // Check if admin exists in the database
+    let admin = await Admin.findOne({ email: ADMIN_EMAIL });
+
+    // If admin doesn't exist, create a new admin
+    if (!admin) {
+      admin = new Admin({
+        email: ADMIN_EMAIL,
+        password: ADMIN_PASSWORD, // Store password as plain text
+        role: 'admin',
+      });
+      await admin.save();
+    }
+
+    // Return success response
     return res.status(200).json({
       success: true,
-      message: "Admin login successful",
+      message: 'Admin login successful',
       data: {
-        email: ADMIN_EMAIL,
-        role: "admin",
+        id: admin._id,
+        email: admin.email,
+        role: admin.role,
       },
     });
   } catch (error) {
-    console.error("Admin Login Error:", error);
+    console.error('Admin Login Error:', error);
     res.status(500).json({
-      message: "Server error during login",
       success: false,
+      message: 'Server error during login',
       data: null,
     });
   }

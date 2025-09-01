@@ -12,7 +12,8 @@ const {
   applyInternship,
   getInternshipApplicants,
   getStudentAppliedInternships,
-  getAllSimpleInternships
+  getAllSimpleInternships,
+  editInternship,
 } = require("../controllers/internship-controllers/internshipController");
 const { internshipImageMW, resumePdfMW } = require("../middlewares/profile");
 
@@ -32,6 +33,8 @@ router.post("/apply/:sid/:iid", applyInternship);
 router.get("/institute/:internshipId/applicants", getInternshipApplicants);
 router.get("/student/:studentId/applied-internships", getStudentAppliedInternships);
 
+//Edit
+router.put('/:id', editInternship);
 // 🗑 DELETE
 router.delete("/:id", deleteInternship);
 

@@ -376,3 +376,41 @@ exports.updateStudentProfile = async (req, res) => {
     });
   }
 };
+
+exports.deleteStudent = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({ 
+        message: "Student ID Missing",
+        success: false,
+        data: null
+      });
+    }
+
+    const student = await Student.findById(id);
+    if (!student) {
+      return res.status(404).json({ 
+        message: "Student not found",
+        success: false,
+        data: null
+      });
+    }
+
+    await Student.findByIdAndDelete(id);
+
+    res.status(200).json({
+      message: "Student deleted successfully",
+      success: true,
+      data: null
+    });
+  } catch (error) {
+    console.error("Delete Student Error:", error);
+    res.status(500).json({ 
+      message: "Internal server error",
+      success: false,
+      data: null
+    });
+  }
+};

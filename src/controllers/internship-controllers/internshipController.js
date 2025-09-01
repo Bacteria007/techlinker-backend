@@ -77,6 +77,50 @@ exports.addInternship = async (req, res) => {
   }
 };
 
+// ✏️ PUT: Edit internship
+exports.editInternship = async (req, res) => {
+  try {
+    const { id } = req.params; // Internship ID from URL params
+    const updates = req.body;
+
+    // Find the internship by ID
+    const internship = await Internship.findById(id);
+    if (!internship) {
+      return res.status(404).json({
+        message: "Internship not found",
+        success: false,
+        data: null,
+      });
+    }
+
+    // Apply updates only if provided
+    if (updates.title) internship.title = updates.title;
+    if (updates.location) internship.location = updates.location;
+    if (updates.description) internship.description = updates.description;
+    if (updates.type) internship.type = updates.type;
+    if (updates.education) internship.education = updates.education;
+    if (updates.stipend) internship.stipend = updates.stipend;
+    if (updates.joblevel) internship.joblevel = updates.joblevel;
+    if (updates.deadline) internship.deadline = updates.deadline;
+
+    // Save updated internship
+    await internship.save();
+
+    res.status(200).json({
+      message: "Internship updated successfully",
+      success: true,
+      data: internship,
+    });
+  } catch (error) {
+    console.error("Error editing internship:", error);
+    res.status(500).json({
+      message: "Server error while updating internship",
+      success: false,
+      data: null,
+    });
+  }
+};
+
 // ✅ GET: Single internship
 exports.getSingleInternship = async (req, res) => {
   try {
@@ -108,7 +152,11 @@ exports.getSingleInternship = async (req, res) => {
 // ✅ GET: All internships (with optional limit)
 exports.getAllSimpleInternships = async (req, res) => {
   try {
-    const internships = await Internship.find().sort({ createdAt: -1 });
+    const internships = await Internship.find().populate({
+    path: "instituteId",
+    select: "name", // explicitly include name (and any other needed fields)
+  })
+  .sort({ createdAt: -1 });
 
     res.status(200).json({
       message: "Internships retrieved successfully",
@@ -126,7 +174,11 @@ exports.getAllSimpleInternships = async (req, res) => {
 };
 exports.getInternships = async (req, res) => {
   try {
-    const internships = await Internship.find().sort({ createdAt: -1 });
+    const internships = await Internship.find().populate({
+    path: "instituteId",
+    select: "name",
+  })
+  .sort({ createdAt: -1 });
 
     // Log raw instituteId values for debugging
     console.log(
@@ -167,18 +219,22 @@ exports.getInternshipsByInstitute = async (req, res) => {
       .lean(); // lean for plain objects
 
     // Get all internship IDs
-    const internshipIds = internships.map(i => i._id);
+    const internshipIds = internships.map((i) => i._id);
 
     // Find applications for these internships
-    const applications = await Application.find({ internshipId: { $in: internshipIds } })
+    const applications = await Application.find({
+      internshipId: { $in: internshipIds },
+    })
       .populate("studentId", "name email phone bio") // only select necessary fields
       .lean();
 
     // Merge applications into internships
-    const internshipsWithApplicants = internships.map(internship => {
+    const internshipsWithApplicants = internships.map((internship) => {
       return {
         ...internship,
-        applicants: applications.filter(app => String(app.internshipId) === String(internship._id))
+        applicants: applications.filter(
+          (app) => String(app.internshipId) === String(internship._id)
+        ),
       };
     });
 
@@ -187,10 +243,9 @@ exports.getInternshipsByInstitute = async (req, res) => {
       success: true,
       data: {
         count: internshipsWithApplicants.length,
-        internships: internshipsWithApplicants
+        internships: internshipsWithApplicants,
       },
     });
-
   } catch (error) {
     console.error("Error fetching internships by institute:", error);
     res.status(500).json({
@@ -200,7 +255,6 @@ exports.getInternshipsByInstitute = async (req, res) => {
     });
   }
 };
-
 
 // 🗑 DELETE: Internship by ID
 exports.deleteInternship = async (req, res) => {
@@ -345,10 +399,10 @@ exports.searchInternship = async (req, res) => {
 
 exports.applyInternship = async (req, res) => {
   try {
-    const { sid,iid } = req.params;
-    console.log(sid,iid)
+    const { sid, iid } = req.params;
+    console.log(sid, iid);
     if (!sid || !iid) {
-      console.log("Student ID, internship ID required")
+      console.log("Student ID, internship ID required");
       return res.status(400).json({
         message: "Student ID, internship ID required",
         success: false,
@@ -378,8 +432,8 @@ exports.applyInternship = async (req, res) => {
 
     // Check if student has already applied
     const existingApplication = await Application.findOne({
-      studentId:sid,
-      internshipId:iid,
+      studentId: sid,
+      internshipId: iid,
     });
     if (existingApplication) {
       return res.status(400).json({
@@ -391,8 +445,8 @@ exports.applyInternship = async (req, res) => {
 
     // Create new application
     const application = new Application({
-      studentId:sid,
-      internshipId:iid,
+      studentId: sid,
+      internshipId: iid,
       // resume: resumeFile.path,
     });
 

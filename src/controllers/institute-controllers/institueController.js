@@ -1,5 +1,6 @@
 const bcrypt = require("bcryptjs");
 const Institute = require("../../models/institutes");
+const Internship = require("../../models/internships");
 
 // 📌 Signup
 exports.signup = async (req, res) => {
@@ -206,6 +207,41 @@ exports.changePassword = async (req, res) => {
     res.status(500).json({
       message: "Server error",
       success: false,
+    });
+  }
+};
+
+// 📌 Delete Institute
+exports.deleteInstitute = async (req, res) => {
+  try {
+    const instituteId = req.params.id;
+
+    const institute = await Institute.findById(instituteId);
+    if (!institute) {
+      return res.status(404).json({
+        message: "Institute not found",
+        success: false,
+        data: null,
+      });
+    }
+
+    // Delete all internships associated with this institute
+    await Internship.deleteMany({ instituteId: instituteId });
+
+    // Delete the institute
+    await Institute.findByIdAndDelete(instituteId);
+
+    res.status(200).json({
+      message: "Institute and its internships deleted successfully",
+      success: true,
+      data: null,
+    });
+  } catch (error) {
+    console.error("Error deleting institute and internships:", error);
+    res.status(500).json({
+      message: "Server error",
+      success: false,
+      data: null,
     });
   }
 };
