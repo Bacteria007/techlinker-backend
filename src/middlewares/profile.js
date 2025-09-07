@@ -5,7 +5,10 @@ const fs = require("fs");
 // 📌 Function to create a dynamic upload middleware
 function createUploadMiddleware(folderName, allowedMimeTypes, fieldName) {
   // Ensure upload folder exists
-  const uploadPath = `./uploads/assets/${folderName}`;
+  const uploadPath = process.env.NODE_ENV === 'production'
+  ? '/tmp/assets/resumes' // For Vercel temporary
+  : `./uploads/assets/${folderName}`;
+  // const uploadPath = `./uploads/assets/${folderName}`;
   if (!fs.existsSync(uploadPath)) {
     fs.mkdirSync(uploadPath, { recursive: true });
   }

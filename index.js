@@ -15,7 +15,7 @@ const PORT = 3000;
 
 // app.use(bodyParser.json());
 dotenv.config();
-connectDB();
+connectDB();          
 
 // app.use(logger);
 app.use(errorHandler);
