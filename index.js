@@ -35,9 +35,10 @@ app.get("/health", (req, res) => {
   res.status(200).send("API is running...");
 });
 app.get("/", (req, res) => {
-  console.log('Backend conected')
-  res.status(200).send("Server is listening you...");
+  console.log('Backend connected');
+  res.status(200).json({ message: "Server is listening you..." });
 });
+
 
 app.listen(PORT, () => {
 
