@@ -32,11 +32,11 @@ app.use("/api/messages", messageRoutes);
 
 app.get("/health", (req, res) => {
   console.log('healthy=====')
-  res.send("API is running...");
+  res.status(200).send("API is running...");
 });
 app.get("/", (req, res) => {
   console.log('Backend conected')
-  res.send("Server is listening you...");
+  res.status(200).send("Server is listening you...");
 });
 
 app.listen(PORT, () => {
