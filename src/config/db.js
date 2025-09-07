@@ -4,7 +4,7 @@ dotenv.config();
 
 const connectDB = async () => {
   try { 
-    await mongoose.connect("mongodb+srv://techlinker_db_user:techlinker123@cluster0.gwwnfx5.mongodb.net/");
+    await mongoose.connect(process.env.MONGODB_HOST);
     console.log('db connected');
   } catch (err) {
     console.error(err.message);
@@ -14,6 +14,3 @@ const connectDB = async () => {
 
 module.exports = connectDB;
 
-// techlinker_db_user  ==username
-// techlinker123    ==pass
-// mongodb+srv://techlinker_db_user:techlinker123@cluster0.gwwnfx5.mongodb.net/
