@@ -7,13 +7,14 @@ const adminRoutes = require("./src/routes/adminRoutes");
 const internshipRoutes = require("./src/routes/internshipRoutes");
 const messageRoutes = require("./src/routes/messages");
 const connectDB = require("./src/config/db");
+const dotenv=require("dotenv")
 // const bodyParser = require("body-parser");
 
 const app = express();
 const PORT = 3000;
 
 // app.use(bodyParser.json());
-// dotenv.config();
+dotenv.config();
 app.use(logger);
 app.use(errorHandler);
 connectDB();
