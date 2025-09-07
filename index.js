@@ -1,5 +1,5 @@
 const express = require("express");
-const logger = require("./src/middlewares/logger");
+// const logger = require("./src/middlewares/logger");
 const errorHandler = require("./src/middlewares/errorhandler");
 const studentRoutes = require("./src/routes/studentRoutes");
 const instituteRoutes = require("./src/routes/instituteRoutes");
@@ -15,12 +15,14 @@ const PORT = 3000;
 
 // app.use(bodyParser.json());
 dotenv.config();
-app.use(logger);
-app.use(errorHandler);
 connectDB();
-app.use(express.json());
-app.use("/uploads", express.static("uploads"));
 
+// app.use(logger);
+app.use(errorHandler);
+app.use(express.json());
+
+
+app.use("/uploads", express.static("uploads"));
 
 app.use("/api/student", studentRoutes);
 app.use("/api/institute", instituteRoutes);
