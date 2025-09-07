@@ -13,6 +13,10 @@ const instituteSchema = new mongoose.Schema({
     type: String,
     default: userType.INSTITUE,
   },
+  active: {
+      type: Boolean,
+      default: true,
+    },
 });
 
 const Institute = mongoose.model("institutes", instituteSchema);

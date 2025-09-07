@@ -383,12 +383,13 @@ exports.deleteStudent = async (req, res) => {
 
     if (!id) {
       return res.status(400).json({ 
-        message: "Student ID Missing",
+        message: "Student ID is missing",
         success: false,
         data: null
       });
     }
 
+    // Check if the student exists
     const student = await Student.findById(id);
     if (!student) {
       return res.status(404).json({ 
@@ -398,10 +399,11 @@ exports.deleteStudent = async (req, res) => {
       });
     }
 
-    await Student.findByIdAndDelete(id);
+    // Soft delete by setting active to false
+    await Student.findByIdAndUpdate(id, { $set: { active: false } });
 
     res.status(200).json({
-      message: "Student deleted successfully",
+      message: "Student deactivated successfully",
       success: true,
       data: null
     });

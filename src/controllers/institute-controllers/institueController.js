@@ -216,6 +216,7 @@ exports.deleteInstitute = async (req, res) => {
   try {
     const instituteId = req.params.id;
 
+    // Check if the institute exists
     const institute = await Institute.findById(instituteId);
     if (!institute) {
       return res.status(404).json({
@@ -225,14 +226,20 @@ exports.deleteInstitute = async (req, res) => {
       });
     }
 
-    // Delete all internships associated with this institute
-    await Internship.deleteMany({ instituteId: instituteId });
+    // Soft Delete all internships associated with this institute
+    await Internship.updateMany(
+      { instituteId: instituteId }, // filter by institute
+      { $set: { active: false } } // soft delete flag
+    );
 
-    // Delete the institute
-    await Institute.findByIdAndDelete(instituteId);
+    // Soft Delete the institute
+    await Institute.findByIdAndUpdate(
+      instituteId,
+      { $set: { active: false } }
+    );
 
     res.status(200).json({
-      message: "Institute and its internships deleted successfully",
+      message: "Institute and its internships deleted successfully (soft delete applied)",
       success: true,
       data: null,
     });
@@ -245,3 +252,4 @@ exports.deleteInstitute = async (req, res) => {
     });
   }
 };
+

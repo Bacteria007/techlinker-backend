@@ -25,6 +25,10 @@ const internshipSchema = new mongoose.Schema(
       type: String,
       default: userType.INSTITUE,
     },
+    active: {
+      type: Boolean,
+      default: true,
+    },
   },
   { timestamps: true }
 );
