@@ -6,7 +6,7 @@ const Internship = require("../../models/internships");
 exports.signup = async (req, res) => {
   try {
     const { name, email, password, phone, website, about, address } = req.body;
-    console.log(name, email, password, phone, website, about, address);
+    // console.log(name, email, password, phone, website, about, address);
     // Check if email already exists
     const existingInstitute = await Institute.findOne({ email });
     if (existingInstitute) {

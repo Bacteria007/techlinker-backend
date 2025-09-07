@@ -181,10 +181,10 @@ exports.getInternships = async (req, res) => {
   .sort({ createdAt: -1 });
 
     // Log raw instituteId values for debugging
-    console.log(
-      "Raw instituteIds:",
-      internships.map((i) => i.instituteId)
-    );
+    // console.log(
+    //   "Raw instituteIds:",
+    //   internships.map((i) => i.instituteId)
+    // );
 
     const populatedInternships = await Internship.find()
       .populate({
@@ -402,7 +402,7 @@ exports.applyInternship = async (req, res) => {
     const { sid, iid } = req.params;
     console.log(sid, iid);
     if (!sid || !iid) {
-      console.log("Student ID, internship ID required");
+      // console.log("Student ID, internship ID required");
       return res.status(400).json({
         message: "Student ID, internship ID required",
         success: false,
